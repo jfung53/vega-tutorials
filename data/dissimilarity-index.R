@@ -103,7 +103,14 @@ local_seg_export <- local_seg %>%
 
 head(local_seg_export)
 
-# remove rows without income data
-local_seg_export <- na.omit(local_seg_export)
+# add income column
+local_seg_export <- local_seg_export %>%
+  left_join(mhhincome2 %>% select(GEOID, B19013_001E), 
+            by = "GEOID")
+
+local_seg_export <- local_seg_export %>%
+  rename(
+    income = B19013_001E
+  )
 
 write.csv(local_seg_export, "dissimilarity_scores.csv", row.names=FALSE)
