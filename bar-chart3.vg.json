@@ -1,0 +1,105 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v6.json",
+    "description": "A basic bar chart example, with value labels shown upon pointer hover.",
+    "width": 400,
+    "height": 200,
+    "padding": 5,
+  
+    "data": [
+      {
+        "name": "table",
+        "url": "data/chart2_pools_large.csv",
+        "format": {
+          "type": "csv",
+          "parse": "auto",
+          "delimiter": ","
+        }
+      }
+    ],
+  
+    "signals": [
+      {
+        "name": "tooltip",
+        "value": {},
+        "on": [
+          {"events": "rect:pointerover", "update": "datum"},
+          {"events": "rect:pointerout",  "update": "{}"}
+        ]
+      }
+    ],
+  
+    "scales": [
+      {
+        "name": "xscale",
+        "type": "band",
+        "domain": {"data": "table", "field": "pool_name"},
+        "range": "width",
+        "padding": 0.1,
+        "round": true
+      },
+      {
+        "name": "yscale",
+        "domain": {"data": "table", "field": "cubic_feet"},
+        "nice": true,
+        "range": "height"
+      }
+    ],
+  
+    "axes": [
+      {
+        "orient": "bottom",
+        "scale": "xscale",
+        "encode": {
+          "labels": {
+            "update": {
+              "angle": {"value": -25},
+              "align": {"value": "right"}
+            }
+          }
+        }
+      },
+      { "orient": "left", "scale": "yscale" }
+    ],
+  
+    "marks": [
+      {
+        "name": "bars",
+        "type": "rect",
+        "interactive": true,
+        "from": {"data":"table"},
+        "encode": {
+          "enter": {
+            "x": {"scale": "xscale", "field": "pool_name"},
+            "width": {"scale": "xscale", "band": 1},
+            "y": {"scale": "yscale", "field": "cubic_feet"},
+            "y2": {"scale": "yscale", "value": 0}
+          },
+          "update": {
+            "fill": {"value": "hotpink"}
+          },
+          "hover": {
+            "fill": {"value": "deeppink"}
+          }
+        }
+      },
+      {
+        "type": "text",
+        "encode": {
+          "enter": {
+            "align": {"value": "center"},
+            "baseline": {"value": "bottom"},
+            "fill": {"value": "#333"}
+          },
+          "update": {
+            "x": {"scale": "xscale", "signal": "tooltip.pool_name", "band": 0.5},
+            "y": {"scale": "yscale", "signal": "tooltip.cubic_feet", "offset": -2},
+            "text": {"signal": "tooltip.borough"},
+            "fillOpacity": [
+              {"test": "datum === tooltip", "value": 0},
+              {"value": 1}
+            ]
+          }
+        }
+      }
+    ]
+  }

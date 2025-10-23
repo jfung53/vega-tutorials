@@ -1,0 +1,86 @@
+/* import fonts */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Rubik:ital,wght@0,300..900;1,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap');
+
+
+:root {
+    --not-black: #1E1E1E;
+}
+
+/*
+* {
+    border: 1px dashed red;
+}
+*/
+
+body {
+    width: 80%;
+    margin: auto;
+    padding-top: 72px;
+    background: mintcream;
+    /* font-family: "Source Serif 4", Georgia, "Times New Roman", Times, serif; */
+    /* font-family: "IBM Plex Mono", Courier, Arial, Helvetica, sans-serif; */
+    font-family: "Rubik", Courier, Helvetica, Arial, sans-serif;
+    /* color: var(--not-black); */
+    color: deeppink;
+    line-height: 1.5;
+}
+
+.intro-container {
+    width: 70%;
+}
+
+.chart-container {
+    width: 70%;
+    margin-top: 72px;
+}
+
+.end-container {
+    width: 70%;
+    margin-top: 104px;
+    margin-bottom: 104px;
+}
+
+h1, h4, h5 {
+    /* color: var(--not-black); */
+    color: deeppink;
+    /* font-family: "Source Serif 4", Georgia, "Times New Roman", Times, serif; */
+    /* font-family: "IBM Plex Mono", Courier, Arial,Helvetica, sans-serif; */
+    font-family: "Rubik", Courier, Helvetica, Arial, sans-serif;
+    font-weight: 800;
+}
+
+h2 {
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+h3 {
+    font-weight: 500;
+}
+
+h6 {
+    margin: 0;
+    font-weight: 400;
+    opacity: 80%;
+    text-transform: uppercase;
+}
+
+a {
+    color: cornflowerblue;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    color: dodgerblue;
+    font-weight: 500;
+}
+
+.dot-divider {
+    height: 24px;
+    width: 24px;
+    background-color: deeppink;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="vega tutorials">
+        <meta name="keywords" content="pratt, data, visualization, vega">
+        <meta name="author" content="jocelyn fung">
+        <link rel="stylesheet" type="text/css" href="reset.css">
+        <link rel="stylesheet" type="text/css" href="style.css">
+
+        <!-- vega libraries -->
+        <script src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega-lite@6"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+
+        <title>Vega Tutorials Preview</title>
+        
+    </head>
+
+    <body>
+        
+        <h6>[ INFO 616 ]</h6>
+        <h6>[ Fall Semester 2025 ]</h6>
+
+
+        <h1>Vega Tutorials</h1>
+
+        <h2>Contour Plot</h2>
+        <div id="view4"></div>
+        <script>
+            vegaEmbed("#view4",
+                '/contour-plot.vg.json'
+            );
+        </script>
+        
+        <h2>Basic bar chart</h2>
+        <div id="view"></div>
+        <script>
+            vegaEmbed("#view",
+                // 'https://vega.github.io/vega/examples/bar-chart.vg.json'
+                '/bar-chart.vg.json'
+            );
+        </script>
+
+        <h2>Line chart with options</h2>
+        <div id="view2"></div>
+        <script>
+            vegaEmbed('#view2',
+                '/line.vg.json'
+            );
+        </script>
+
+        <h2>An chart about swimming pools</h2>
+        <div id="view3"></div>
+        <script>
+            vegaEmbed('#view3',
+                '/bar-chart3.vg.json'
+            );
+        </script>
+
+    </body>
+</html>
