@@ -26,17 +26,59 @@
         <h6>[ Fall Semester 2025 ]</h6>
 
 
-        <h1>Vega Tutorials</h1>
+        <h1>Lab 2: Vega</h1>
 
-        <h2>Contour Plot</h2>
+        <h2>Residential segregation in New York City</h2>
+        <p>Each dot represents one census tract, approximately 4,000 people.</p>
         <div id="view4"></div>
         <script>
             vegaEmbed("#view4",
                 '/contour-plot.vg.json'
             );
         </script>
+
+        <p></p>
         
-        <h2>Basic bar chart</h2>
+        <div class="text-container">
+
+            <p>
+                For this lab I chose to work on a contour plot to visualize racial segregation across New York City. I was inspired by <a href="https://www.scientificamerican.com/article/a-human-on-a-bicycle-is-among-the-most-efficient-forms-of-travel-in-the/" target=_blank>this chart</a> from 1973 that Scientific American recently recreated as a risograph animation.
+            </p>
+
+            <h3>Workflow</h3>
+
+            <p>
+                I started with a <a href="https://vega.github.io/editor/#/examples/vega/contour-plot" target="_blank">contour plot example</a> from the Vega documentation. I determined that I needed to compare 2 quantitative variables and 1 categorical.  
+            </p>
+
+            <p>
+                I used the <em>tidycensus</em> package in R to get data on <strong>race</strong> and <strong>median household income</strong> aggregated at the census tract level. Local multi-group <a href="https://walker-data.com/census-r/modeling-us-census-data.html" target=_blank>segregation scores</a> were calculated per tract between Asian, Black, Hispanic, and White population estimates (American Community Survey 2022). I chose to use the <strong>five boroughs</strong> as the categorical variable.  The data was exported to a json file to be read by Vega.  I had to remove some filtering on the original Vega plot for the data to be accepted by the data viewer. 
+            </p>
+
+            <p>
+                To customize the chart for this data I set the colours of scatter plot dots to match each of the borough colours (the example chart had only grey dots) and I made them slightly larger. I did not need the option to toggle between independent and shared axes, as in the example, so I removed that interaction. I added a custom font by creating a "config" section in the json, and tweaked each element colour.  I also increased the number of contours from 3 to 12, this helped to define the shape of each borough cluster more clearly. 
+            </p>
+
+            <h3>Interpreting the chart</h3>
+
+            <p>
+                A score greater than 1.0 means that that area contributes more than the average amount to overall segregation across the city. These areas are probably more racially homogenous. It appears that Manhattan has the widest range of median incomes and tends to have more lower-than-average segregation scores across the board.  Brooklyn seems to have the widest range of segregation scores with Queens coming in at a close second.  
+            </p>
+
+            <p>
+                This information may be better served on a map, especially since so many of the contours overlap on this chart. It would have been nice to have neighbourhood names in a tooltip, but I don't think there's a definitive list with hard boundaries.  
+            </p>
+
+            <p>
+                To match the Scientific American plot more closely I would like to figure out how to customize the axis titles to add more text.
+            </p>
+            
+        </div>
+        
+
+               
+        
+<!--         <h2>Basic bar chart</h2>
         <div id="view"></div>
         <script>
             vegaEmbed("#view",
@@ -59,7 +101,7 @@
             vegaEmbed('#view3',
                 '/bar-chart3.vg.json'
             );
-        </script>
+        </script> -->
 
     </body>
 </html>

@@ -20,24 +20,15 @@ body {
     /* font-family: "Source Serif 4", Georgia, "Times New Roman", Times, serif; */
     /* font-family: "IBM Plex Mono", Courier, Arial, Helvetica, sans-serif; */
     font-family: "Rubik", Courier, Helvetica, Arial, sans-serif;
+    font-weight: 300;
     /* color: var(--not-black); */
     color: deeppink;
     line-height: 1.5;
+    padding-bottom: 72px;
 }
 
-.intro-container {
-    width: 70%;
-}
-
-.chart-container {
-    width: 70%;
-    margin-top: 72px;
-}
-
-.end-container {
-    width: 70%;
-    margin-top: 104px;
-    margin-bottom: 104px;
+.text-container {
+    width: 100%;
 }
 
 h1, h4, h5 {
@@ -68,12 +59,17 @@ h6 {
 a {
     color: cornflowerblue;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 a:hover {
     color: dodgerblue;
     font-weight: 500;
+}
+
+a:visited {
+    color: orchid;
+    font-weight: 400;
 }
 
 .dot-divider {

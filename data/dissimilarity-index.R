@@ -1,43 +1,43 @@
 # based on https://walker-data.com/census-r/modeling-us-census-data.html
 
-setwd("/Users/jocelyn/Documents/Pratt/616-interactive-viz/vega-tutorials")
+setwd("/Users/jocelyn/Documents/Pratt/616-interactive-viz/vega-tutorials/data")
 library(tidyverse)
 library(tidycensus)
 library(segregation)
 library(dplyr)
 library(stringr)
+library(jsonlite)
 
 census_api_key("e765fd46add9ecff24174462fb36873559ba91e7")
 
-# get new york city race/ethnicity data by census tract
-fiveBoroughs <- c("Kings", "Queens", "New York", "Bronx", "Richmond")
-
+# set up race variables
 race <- c(
-  white = "B03002_003",
-  black = "B03002_004",
   asian = "B03002_006",
-  hispanic = "B03002_012")
+  black = "B03002_004",
+  hispanic = "B03002_012",
+  white = "B03002_003")
 
-nyc_data <- get_acs(geography = "tract",
+# nyc's counties, aka the five boroughs
+nyc_counties <- c("Kings", "Queens", "New York", "Bronx", "Richmond")
+
+# get nyc race data
+nyc_race <- get_acs(geography = "tract",
                     state = "New York",
                     # geometry = TRUE,
-                    county = fiveBoroughs, 
+                    county = nyc_counties, 
                     variables = race, 
                     year = 2022)
 
-# median household income data per census tract
-mhhincome <- get_acs(geography = "tract",
+# get nyc median household income
+nyc_income <- get_acs(geography = "tract",
                     state = "New York",
-                    county = fiveBoroughs,
+                    county = nyc_counties,
                     variables = "B19013_001E",
                     year = 2022,
                     output = "wide")
 
-# remove NA's
-mhhincome2 <- na.omit(mhhincome)
-
-# new column for borough names using dplyr and stringr
-nyc_data <- nyc_data %>%
+# make new column for borough names using dplyr and stringr
+nyc_race <- nyc_race %>%
   mutate(borough = case_when(
     str_detect(NAME, "Bronx") ~ "Bronx",
     str_detect(NAME, "Kings") ~ "Brooklyn",
@@ -48,7 +48,7 @@ nyc_data <- nyc_data %>%
   ))
 
 # adding borough names to income df
-mhhincome2 <- mhhincome2 %>%
+nyc_income <- nyc_income %>%
   mutate(borough = case_when(
     str_detect(NAME, "Bronx") ~ "Bronx",
     str_detect(NAME, "Kings") ~ "Brooklyn",
@@ -59,7 +59,7 @@ mhhincome2 <- mhhincome2 %>%
   ))
 
 # testing dissimilarity index between two groups
-nyc_data %>%
+nyc_race %>%
   filter(variable %in% c("white", "black")) %>%
   dissimilarity(
     group = "variable",
@@ -68,7 +68,7 @@ nyc_data %>%
   )
 
 # testing dissimilarity by borough
-nyc_data %>%
+nyc_race %>%
   filter(variable %in% c("white", "black")) %>%
   group_by(borough) %>%
   group_modify(~
@@ -80,37 +80,43 @@ nyc_data %>%
 
 
 # calculate multi-group segregation indices per census tract
-
-local_seg <- 
-  mutual_local(
-    data = nyc_data,
-    group = "variable",
-    unit = "GEOID",
-    weight = "estimate",
-    wide = TRUE
-)
-
 # ls = unit-level segregation scores
 # ls = 1  average segregation
 # ls > 1  more segregated than average
 # ls < 1  less segregated than average
 # ls = 0  no segregation
+nyc_localseg <- 
+  mutual_local(data = nyc_race,
+               group = "variable",
+               unit = "GEOID",
+               weight = "estimate",
+               wide = TRUE)
 
 # add borough column 
-local_seg_export <- local_seg %>%
-  left_join(mhhincome2 %>% select(GEOID, borough),
+nyc_localseg <- nyc_localseg %>%
+  left_join(nyc_income %>% select(GEOID, borough),
             by = "GEOID")
 
-head(local_seg_export)
+head(nyc_localseg)
 
 # add income column
-local_seg_export <- local_seg_export %>%
-  left_join(mhhincome2 %>% select(GEOID, B19013_001E), 
+nyc_localseg <- nyc_localseg %>%
+  left_join(nyc_income %>% select(GEOID, B19013_001E), 
             by = "GEOID")
 
-local_seg_export <- local_seg_export %>%
+# rename census table name to income
+nyc_localseg <- nyc_localseg %>%
   rename(
     income = B19013_001E
   )
 
-write.csv(local_seg_export, "dissimilarity_scores.csv", row.names=FALSE)
+# remove rows with no income data
+nyc_localseg <- na.omit(nyc_localseg)
+
+
+# export to csv
+# write.csv(nyc_localseg, "nyc_censustracts.csv", row.names=FALSE)
+
+# export to json for vega
+write_json(nyc_localseg, "nyc_censustracts.json", pretty=TRUE)
+

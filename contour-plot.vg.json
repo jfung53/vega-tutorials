@@ -1,106 +1,168 @@
 {
-    "$schema": "https://vega.github.io/schema/vega/v6.json",
-    "description": "A basic bar chart example, with value labels shown upon pointer hover.",
-    "width": 400,
-    "height": 200,
-    "padding": 5,
-  
-    "data": [
-      {
-        "name": "table",
-        "url": "data/dissimilarity_scores.csv",
-        "format": {
-          "type": "csv",
-          "parse": "auto",
-          "delimiter": ","
-        }
-      }
-    ],
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "A contour plot example, overlaying a density estimate on scatter plot points.",
+  "width": 500,
+  "height": 400,
+  "padding": 5,
+  "autosize": "pad",
 
-     
-    "signals": [
-      {
-        "name": "tooltip",
-        "value": {},
-        "on": [
-          {"events": "rect:pointerover", "update": "datum"},
-          {"events": "rect:pointerout",  "update": "{}"}
-        ]
-      }
-    ],
-  
-    "scales": [
-      {
-        "name": "xscale",
-        "type": "band",
-        "domain": {"data": "table", "field": "pool_name"},
-        "range": "width",
-        "padding": 0.1,
-        "round": true
+  "config": {
+    "axis": 
+    {
+      "labelFont": {"signal": "fontMain"},
+      "labelFontWeight": 300,
+      "labelColor": "darkslategrey",
+      "titleFont": {"signal": "fontMain"},
+      "titleColor": "dimgrey",
+      "titleFontWeight": 400
+    },
+    "legend": {"labelFont": {"signal": "fontMain"}}
+  },
+
+  "signals": [
+    {
+      "name": "fontMain", "value": "Source Serif 4"
+    }
+  ],
+
+  "data": [
+    {
+      "name": "source",
+      "url": "https://raw.githubusercontent.com/jfung53/vega-tutorials/refs/heads/main/data/dissimilarity_scores.json"
+    },
+    {
+      "name": "density",
+      "source": "source",
+      "transform": [
+        {
+          "type": "kde2d",
+          "groupby": ["borough"],
+          "size": [{"signal": "width"}, {"signal": "height"}],
+          "x": {"expr": "scale('x', datum.income)"},
+          "y": {"expr": "scale('y', datum.ls)"}
+        }
+      ]
+    },
+    {
+      "name": "contours",
+      "source": "density",
+      "transform": [
+        {
+          "type": "isocontour",
+          "field": "grid",
+          "resolve": "shared",
+          "levels": 12
+        }
+      ]
+    }
+  ],
+
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "round": true,
+      "nice": true,
+      "zero": true,
+      "domain": {"data": "source", "field": "income"},
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "round": true,
+      "nice": true,
+      "zero": false,
+      "domain": {"data": "source", "field": "ls"},
+      "range": "height"
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": {
+        "data": "source", "field": "borough"
       },
-      {
-        "name": "yscale",
-        "domain": {"data": "table", "field": "cubic_feet"},
-        "nice": true,
-        "range": "height"
+      "range": {"scheme": "observable10"}
+    }
+  ],
+
+  "axes": [
+    {
+      "scale": "x",
+      "grid": true,
+      "domain": false,
+      "orient": "bottom",
+      "tickCount": 5,
+      "tickColor": "gainsboro",
+      "title": "Median household income",
+      "titlePadding": 10,
+      "gridColor": "gainsboro"
+    },
+    {
+      "scale": "y",
+      "grid": true,
+      "domain": false,
+      "orient": "left",
+      "tickColor": "gainsboro",
+      "title": "Segregation score",
+      "titlePadding": 16,
+      "gridColor": "gainsboro"
+    }
+  ],
+
+  "legends": [
+    {"fill": "color", "symbolType": "circle"}
+  ],
+
+  "marks": [
+    {
+      "name": "marks",
+      "type": "symbol",
+      "from": {"data": "source"},
+      "encode": {
+        "update": {
+          "x": {"scale": "x", "field": "income"},
+          "y": {"scale": "y", "field": "ls"},
+          "size": {"value": 10},
+          "fill": {"scale": "color", "field": "borough"}
+        }
       }
-    ],
-  
-    "axes": [
-      {
-        "orient": "bottom",
-        "scale": "xscale",
-        "encode": {
-          "labels": {
-            "update": {
-              "angle": {"value": -25},
-              "align": {"value": "right"}
-            }
-          }
+    },
+    {
+      "type": "image",
+      "from": {"data": "density"},
+      "encode": {
+        "update": {
+          "x": {"value": 0},
+          "y": {"value": 0},
+          "width": {"signal": "width"},
+          "height": {"signal": "height"},
+          "aspect": {"value": false}
         }
       },
-      { "orient": "left", "scale": "yscale" }
-    ],
-  
-    "marks": [
-      {
-        "name": "bars",
-        "type": "rect",
-        "interactive": true,
-        "from": {"data":"table"},
-        "encode": {
-          "enter": {
-            "x": {"scale": "xscale", "field": "pool_name"},
-            "width": {"scale": "xscale", "band": 1},
-            "y": {"scale": "yscale", "field": "cubic_feet"},
-            "y2": {"scale": "yscale", "value": 0}
-          },
-          "update": {
-            "fill": {"value": "hotpink"}
-          },
-          "hover": {
-            "fill": {"value": "deeppink"}
-          }
+      "transform": [
+        {
+          "type": "heatmap",
+          "field": "datum.grid",
+          "resolve": "shared",
+          "color": {"expr": "scale('color', datum.datum.borough)"}
+        }
+      ]
+    },
+    {
+      "type": "path",
+      "clip": true,
+      "from": {"data": "contours"},
+      "encode": {
+        "enter": {
+          "strokeWidth": {"value": 1},
+          "strokeOpacity": {"value": 1},
+          "stroke": {"scale": "color", "field": "borough"}
         }
       },
-      {
-        "type": "text",
-        "encode": {
-          "enter": {
-            "align": {"value": "center"},
-            "baseline": {"value": "bottom"},
-            "fill": {"value": "#333"}
-          },
-          "update": {
-            "x": {"scale": "xscale", "signal": "tooltip.pool_name", "band": 0.5},
-            "y": {"scale": "yscale", "signal": "tooltip.cubic_feet", "offset": -2},
-            "text": {"signal": "tooltip.borough"},
-            "fillOpacity": [
-              {"test": "datum === tooltip", "value": 0},
-              {"value": 1}
-            ]
-          }
-        }
-      }
-    ]
-  }
+      "transform": [
+        { "type": "geopath", "field": "datum.contour" }
+      ]
+    }
+  ]
+}
