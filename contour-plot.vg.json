@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
-  "description": "A contour plot example, overlaying a density estimate on scatter plot points.",
+  "description": "A contour plot of residential segregation in NYC by borough.",
   "width": 500,
   "height": 400,
   "padding": 5,
